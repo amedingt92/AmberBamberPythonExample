@@ -1,0 +1,39 @@
+# ======================
+# Python artifacts
+# ======================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ======================
+# Virtual environments
+# ======================
+.venv/
+venv/
+ENV/
+env/
+
+# ======================
+# Jupyter
+# ======================
+.ipynb_checkpoints/
+
+# ======================
+# OS / Editor junk
+# ======================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ======================
+# Project outputs
+# ======================
+outputs/figures/
+outputs/models/
+
+# ======================
+# Secrets / environment
+# ======================
+.env
+.env.*
