@@ -1,0 +1,11 @@
+# Direct dependencies, as ranges. Edit this file, then regenerate the lock:
+#   pip-compile --strip-extras --no-header --no-annotate requirements.in
+# requirements.txt is generated from this file; do not edit it by hand.
+
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+jupyterlab
+python-dateutil
