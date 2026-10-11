@@ -1,0 +1,42 @@
+# Scans the locked dependencies for known vulnerabilities. This project has no tests, so there is nothing to
+# install or run: the audit reads requirements.txt and asks the advisory database, which takes about half a minute.
+#
+# Written to stay inside GitHub's free allowance for private repositories (2,000 Linux minutes a month for the whole
+# account): it runs only when the lock changes, plus once a week to catch advisories published against a lock that did
+# not change, on Linux, one short job, cancelling superseded runs.
+name: lock-audit
+
+on:
+  push:
+    branches: [main]
+    paths: ["requirements*.txt", ".github/workflows/lock-audit.yml"]
+  pull_request:
+    paths: ["requirements*.txt", ".github/workflows/lock-audit.yml"]
+  schedule:
+    - cron: "47 6 * * 1"   # Mondays, 06:47 UTC
+  workflow_dispatch: {}
+
+concurrency:
+  group: lock-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      # Pinned by hand: Dependabot does not read this line. Bump it when you next touch this file.
+      - name: Install the scanner
+        run: pip install pip-audit==2.10.1
+      # Blocking: a newly published advisory against a locked package fails the run. To fix one, raise only that
+      # package in the lock: pip-compile --upgrade-package 'name>=fixed' requirements.in
+      # --no-deps and --disable-pip because requirements.txt is a complete lock, so nothing needs resolving.
+      - name: Scan the lock for known vulnerabilities
+        run: pip-audit -r requirements.txt --no-deps --disable-pip --strict
